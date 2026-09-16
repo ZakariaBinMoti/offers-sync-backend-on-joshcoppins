@@ -1,0 +1,12 @@
+{
+  "name": "offers-sync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scrapes Yamaha NZ and Suzuki NZ motorcycle offer pages and pushes an updated offers block into a Shopify page via the Admin GraphQL API. Designed to run on Vercel as a scheduled (cron) serverless function.",
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
