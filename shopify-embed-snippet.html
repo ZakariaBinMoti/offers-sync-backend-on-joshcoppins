@@ -1,0 +1,159 @@
+<!--
+  Paste this into your Shopify "offers" page.
+
+  How to add it in Shopify:
+  Option A (simplest): Online Store → Pages → Offers → switch the content
+    editor to "Show HTML" (the <> icon in the page content toolbar) and
+    paste this whole block in.
+  Option B (if your theme supports it): create a "Custom Liquid" section
+    on the page in the theme editor and paste this in there instead.
+
+  Replace YOUR-PROJECT.vercel.app below with your actual Vercel deployment
+  URL once you've deployed it.
+-->
+
+<div id="brand-offers" class="brand-offers">
+  <p class="brand-offers__loading">Loading current offers…</p>
+</div>
+
+<style>
+  /* Starter styling - restyle freely to match your site's design.
+     Everything below is scoped under .brand-offers so it won't affect
+     the rest of your theme. */
+  .brand-offers__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .brand-offers__card {
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+  }
+  .brand-offers__img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background: #f2f2f2;
+  }
+  .brand-offers__body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .brand-offers__brand {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+  }
+  .brand-offers__title {
+    margin: 0;
+    font-size: 18px;
+  }
+  .brand-offers__desc {
+    margin: 0;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.4;
+  }
+  .brand-offers__link {
+    margin-top: auto;
+    display: inline-block;
+    padding: 10px 16px;
+    background: #111;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  (function () {
+    // Change this to your deployed Vercel URL:
+    var OFFERS_API_URL = 'https://YOUR-PROJECT.vercel.app/api/offers';
+
+    var container = document.getElementById('brand-offers');
+
+    function createCard(offer) {
+      var card = document.createElement('div');
+      card.className = 'brand-offers__card';
+
+      if (offer.image) {
+        var img = document.createElement('img');
+        img.className = 'brand-offers__img';
+        img.src = offer.image;
+        img.alt = offer.title || '';
+        img.loading = 'lazy';
+        card.appendChild(img);
+      }
+
+      var body = document.createElement('div');
+      body.className = 'brand-offers__body';
+
+      var brand = document.createElement('span');
+      brand.className = 'brand-offers__brand';
+      brand.textContent = offer.brand || '';
+      body.appendChild(brand);
+
+      var title = document.createElement('h3');
+      title.className = 'brand-offers__title';
+      title.textContent = offer.title || '';
+      body.appendChild(title);
+
+      if (offer.description) {
+        var desc = document.createElement('p');
+        desc.className = 'brand-offers__desc';
+        desc.textContent = offer.description;
+        body.appendChild(desc);
+      }
+
+      var link = document.createElement('a');
+      link.className = 'brand-offers__link';
+      link.href = offer.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'View Offer';
+      body.appendChild(link);
+
+      card.appendChild(body);
+      return card;
+    }
+
+    fetch(OFFERS_API_URL)
+      .then(function (res) {
+        if (!res.ok) throw new Error('Request failed: ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var all = [].concat(data.yamaha || [], data.suzuki || []);
+        container.innerHTML = '';
+
+        if (!all.length) {
+          container.innerHTML = '<p>No current offers found — check back soon.</p>';
+          return;
+        }
+
+        var grid = document.createElement('div');
+        grid.className = 'brand-offers__grid';
+        all.forEach(function (offer) {
+          grid.appendChild(createCard(offer));
+        });
+        container.appendChild(grid);
+      })
+      .catch(function (err) {
+        console.error('Failed to load offers:', err);
+        container.innerHTML = '<p>Offers are temporarily unavailable. Please check back shortly.</p>';
+      });
+  })();
+</script>
