@@ -26,6 +26,7 @@
     gap: 24px;
     margin: 24px 0;
   }
+
   .brand-offers__card {
     border: 1px solid #e2e2e2;
     border-radius: 8px;
@@ -34,12 +35,14 @@
     flex-direction: column;
     background: #fff;
   }
+
   .brand-offers__img {
     width: 100%;
     height: 160px;
     object-fit: cover;
     background: #f2f2f2;
   }
+
   .brand-offers__body {
     padding: 16px;
     display: flex;
@@ -47,6 +50,7 @@
     gap: 8px;
     flex: 1;
   }
+
   .brand-offers__brand {
     font-size: 12px;
     font-weight: 700;
@@ -54,16 +58,19 @@
     letter-spacing: 0.05em;
     color: #888;
   }
+
   .brand-offers__title {
     margin: 0;
     font-size: 18px;
   }
+
   .brand-offers__desc {
     margin: 0;
     font-size: 14px;
     color: #444;
     line-height: 1.4;
   }
+
   .brand-offers__link {
     margin-top: auto;
     display: inline-block;
@@ -81,7 +88,7 @@
 <script>
   (function () {
     // Change this to your deployed Vercel URL:
-    var OFFERS_API_URL = 'https://YOUR-PROJECT.vercel.app/api/offers';
+    var OFFERS_API_URL = 'https://offers-sync-backend-on-joshcoppins.vercel.app/api/offers';
 
     var container = document.getElementById('brand-offers');
 

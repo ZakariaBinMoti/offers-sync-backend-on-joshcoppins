@@ -1,5 +1,6 @@
-const { scrapeYamaha } = require('../lib/scrape-yamaha');
-const { scrapeSuzuki } = require('../lib/scrape-suzuki');
+const { scrapeYamaha, YAMAHA_URL } = require('../lib/scrape-yamaha');
+const { scrapeSuzuki, SUZUKI_URL } = require('../lib/scrape-suzuki');
+const { fetchDebugInfo } = require('../lib/scrape-utils');
 
 // Set this to your storefront domain in Vercel's env vars once you know it,
 // e.g. https://joshcoppinsmotorcycles.co.nz
@@ -14,6 +15,20 @@ module.exports = async (req, res) => {
 
   if (req.method === 'OPTIONS') {
     res.status(204).end();
+    return;
+  }
+
+  const isDebug = req.query && req.query.debug === '1';
+
+  if (isDebug) {
+    // Debug mode: never cache; return raw fetch diagnostics so you can see
+    // exactly what Yamaha/Suzuki's servers return to Vercel's IPs.
+    res.setHeader('Cache-Control', 'no-store');
+    const [yamahaDebug, suzukiDebug] = await Promise.all([
+      fetchDebugInfo(YAMAHA_URL),
+      fetchDebugInfo(SUZUKI_URL),
+    ]);
+    res.status(200).json({ debug: { yamaha: yamahaDebug, suzuki: suzukiDebug } });
     return;
   }
 
