@@ -32,11 +32,10 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // Cache at Vercel's edge for 6 hours, and keep serving the cached copy for
-  // up to a day while a fresh scrape happens in the background. This means
-  // most real visitors get an instant cached response instead of waiting on
-  // a live scrape, and Yamaha/Suzuki's servers aren't hit on every pageview.
-  res.setHeader('Cache-Control', 'public, s-maxage=21600, stale-while-revalidate=86400');
+  // Cache at Vercel's edge for 2 days (48 hours = 172800s), and allow serving
+  // stale cached data for up to 7 days while background revalidation runs.
+  // Real visitors always get an instant cached response (<50ms) with zero delay.
+  res.setHeader('Cache-Control', 'public, s-maxage=172800, stale-while-revalidate=604800');
 
   const result = {
     updatedAt: new Date().toISOString(),
