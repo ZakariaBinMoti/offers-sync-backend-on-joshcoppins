@@ -45,16 +45,24 @@ module.exports = async (req, res) => {
     errors: {},
   };
 
-  try {
-    result.yamaha = await scrapeYamaha();
-  } catch (err) {
-    result.errors.yamaha = String(err.message || err);
+  // Run both scrapers in parallel — Yamaha's proxy can take 15-25s, so we
+  // must not block Suzuki behind it. Promise.allSettled means one brand
+  // failing or timing out never blocks or errors out the other.
+  const [yamahaResult, suzukiResult] = await Promise.allSettled([
+    scrapeYamaha(),
+    scrapeSuzuki(),
+  ]);
+
+  if (yamahaResult.status === 'fulfilled') {
+    result.yamaha = yamahaResult.value;
+  } else {
+    result.errors.yamaha = String(yamahaResult.reason?.message || yamahaResult.reason);
   }
 
-  try {
-    result.suzuki = await scrapeSuzuki();
-  } catch (err) {
-    result.errors.suzuki = String(err.message || err);
+  if (suzukiResult.status === 'fulfilled') {
+    result.suzuki = suzukiResult.value;
+  } else {
+    result.errors.suzuki = String(suzukiResult.reason?.message || suzukiResult.reason);
   }
 
   res.status(200).json(result);
